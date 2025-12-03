@@ -43,11 +43,9 @@ namespace DockVision
 
             var statisticForm = new StatisticForm();
             statisticForm.Show(_dockPanel, DockState.DockRight);
-
             
             var LogForm = new LogForm();
             LogForm.Show(propForm.Pane, DockAlignment.Bottom, 0.5);
-
         }
 
         public static T GetDockForm<T>() where T : DockContent
