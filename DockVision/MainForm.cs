@@ -44,13 +44,17 @@ namespace DockVision
             var statisticForm = new StatisticForm();
             statisticForm.Show(_dockPanel, DockState.DockRight);
 
-            // 로그폼
+            
             var LogForm = new LogForm();
             LogForm.Show(propForm.Pane, DockAlignment.Bottom, 0.5);
 
         }
 
-
+        public static T GetDockForm<T>() where T : DockContent
+        {
+            var findForm = _dockPanel.Contents.OfType<T>().FirstOrDefault();
+            return findForm;
+        }
 
 
 
