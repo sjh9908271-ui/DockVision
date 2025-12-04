@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockVision
 {
-    public partial class MainForm : Form
+    public partial class MainForm : DockContent
     {
         private static DockPanel _dockPanel;
 
@@ -43,7 +43,7 @@ namespace DockVision
 
             var statisticForm = new StatisticForm();
             statisticForm.Show(_dockPanel, DockState.DockRight);
-            
+
             var LogForm = new LogForm();
             LogForm.Show(propForm.Pane, DockAlignment.Bottom, 0.5);
         }
@@ -54,11 +54,23 @@ namespace DockVision
             return findForm;
         }
 
+        private void imageOpenToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            CameraForm cameraForm = GetDockForm<CameraForm>();
+            if (cameraForm is null)
+                return;
 
-
-
-
-
-
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "이미지 파일 선택";
+                openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.png;*.gif";
+                openFileDialog.Multiselect = false;
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+                    cameraForm.LoadImage(filePath);
+                }
+            }
+        }
     }
 }
