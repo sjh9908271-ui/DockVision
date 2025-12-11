@@ -32,20 +32,20 @@ namespace DockVision
 
         private void LoadDockingWindows()
         {
-            var cameraForm = new CameraForm();
-            cameraForm.Show(_dockPanel, DockState.Document);
+            var cameraWindow = new CameraForm();
+            cameraWindow.Show(_dockPanel, DockState.Document);
 
-            var resultForm = new ResultForm();
-            resultForm.Show(cameraForm.Pane, DockAlignment.Bottom, 0.3);
+            var resultWindow = new ResultForm();
+            resultWindow.Show(cameraWindow.Pane, DockAlignment.Bottom, 0.3);
 
-            var propForm = new PropertiesForm();
-            propForm.Show(_dockPanel, DockState.DockRight);
+            var propWindow = new PropertiesForm();
+            propWindow.Show(_dockPanel, DockState.DockRight);
 
-            var statisticForm = new StatisticForm();
-            statisticForm.Show(_dockPanel, DockState.DockRight);
+            var statisticWindow = new StatisticForm();
+            statisticWindow.Show(_dockPanel, DockState.DockRight);
 
-            var LogForm = new LogForm();
-            LogForm.Show(propForm.Pane, DockAlignment.Bottom, 0.5);
+            var LogWindow = new LogForm();
+            LogWindow.Show(propWindow.Pane, DockAlignment.Bottom, 0.5);
         }
 
         public static T GetDockForm<T>() where T : DockContent
