@@ -217,5 +217,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="bin\SaigeVision.dll" />
+    <Analyzer Include="bin\SaigeVision.Net.Core.V2.dll" />
+    <Analyzer Include="bin\SaigeVision.Net.V2.dll" />
+    <Analyzer Include="bin\SaigeVision_Impl.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
