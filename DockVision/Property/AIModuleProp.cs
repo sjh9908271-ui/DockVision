@@ -127,6 +127,7 @@ namespace DockVision.Property
             _saigeAI.InspAIModule(bmp);   // 1. 검사
             Global.Inst.InspStage.UpdateDisplay(_saigeAI.GetResultImage()); // 2. 이미지
             UpdateResultUI();             // 3. 예제 UI 출력
+            UpdateClassInfoResultUI(); //4. 검사 결과 기반으로 ClassInfos IsNG 업데이트
         }
 
         private void cbAIModelType_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -418,6 +419,76 @@ namespace DockVision.Property
             }
         }
 
+        private void UpdateClassInfoResultUI()
+        {
+            if (_saigeAI == null) return;
+
+            var result = _saigeAI.GetResult();
+            if (result == null) return;
+
+            switch (_engineType)
+            {
+                case AIEngineType.AnomalyDetection:
+                    UpdateIADClassInfo(result as IADResult);
+                    break;
+
+                case AIEngineType.Detection:
+                    UpdateDetectionClassInfo(result as DetectionResult);
+                    break;
+
+                case AIEngineType.Segmentation:
+                    UpdateSegmentationClassInfo(result as SegmentationResult);
+                    break;
+            }
+        }
+
+        private void UpdateIADClassInfo(IADResult iadResult)
+        {
+            if (iadResult == null || lv_ClassInfos.Items.Count == 0) return;
+
+            for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
+            {
+                var item = lv_ClassInfos.Items[i];
+                string className = item.Text;
+
+                bool hasNG = iadResult.SegmentedObjects.Any(o =>
+                    string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
+
+                item.SubItems[2].Text = hasNG ? "True" : "False";
+            }
+        }
+
+        private void UpdateDetectionClassInfo(DetectionResult detResult)
+        {
+            if (detResult == null || lv_ClassInfos.Items.Count == 0) return;
+
+            for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
+            {
+                var item = lv_ClassInfos.Items[i];
+                string className = item.Text;
+
+                bool hasNG = detResult.DetectedObjects.Any(o =>
+                    string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
+
+                item.SubItems[2].Text = hasNG ? "True" : "False";
+            }
+        }
+
+        private void UpdateSegmentationClassInfo(SegmentationResult segResult)
+        {
+            if (segResult == null || lv_ClassInfos.Items.Count == 0) return;
+
+            for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
+            {
+                var item = lv_ClassInfos.Items[i];
+                string className = item.Text;
+
+                bool hasNG = segResult.SegmentedObjects.Any(o =>
+                    string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
+
+                item.SubItems[2].Text = hasNG ? "True" : "False";
+            }
+        }
     }
 }
 

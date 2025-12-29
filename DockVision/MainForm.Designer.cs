@@ -75,7 +75,7 @@
             this.txt_BaseImagePath.Location = new System.Drawing.Point(44, 0);
             this.txt_BaseImagePath.Multiline = true;
             this.txt_BaseImagePath.Name = "txt_BaseImagePath";
-            this.txt_BaseImagePath.Size = new System.Drawing.Size(612, 24);
+            this.txt_BaseImagePath.Size = new System.Drawing.Size(612, 20);
             this.txt_BaseImagePath.TabIndex = 1;
             // 
             // MainForm
