@@ -14,7 +14,7 @@ namespace DockVision.Property
 {
     public partial class AIModuleProp : UserControl
     {
-        SaigeAI _saigeAI; // SaigeAI 인스턴스
+        SaigeAI _saigeAI;
         string _modelPath = string.Empty;
         AIEngineType _engineType;
 
