@@ -144,8 +144,8 @@ namespace DockVision.Property
 
         private void chkUse_CheckedChanged(object sender, EventArgs e)
         {
-            //bool useBinary = chkUse.Checked;
-            //grpBinary.Enabled = useBinary;
+            bool useBinary = chkUse.Checked;
+            grpBinary.Enabled = useBinary;
 
             GetProperty();
         }
