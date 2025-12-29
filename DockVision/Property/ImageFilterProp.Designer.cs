@@ -33,19 +33,22 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(32, 49);
+            this.button1.Location = new System.Drawing.Point(22, 33);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(91, 55);
+            this.button1.Size = new System.Drawing.Size(64, 37);
             this.button1.TabIndex = 0;
             this.button1.Text = "필터";
             this.button1.UseVisualStyleBackColor = true;
             // 
             // ImageFilterProp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.button1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "ImageFilterProp";
+            this.Size = new System.Drawing.Size(105, 100);
             this.ResumeLayout(false);
 
         }

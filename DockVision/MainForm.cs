@@ -1,8 +1,18 @@
-﻿using System;
+﻿using DockVision.Core;
+using SaigeVision.Net.V2;
+using SaigeVision.Net.V2.Classification;
+using SaigeVision.Net.V2.Detection;
+using SaigeVision.Net.V2.IAD;
+using SaigeVision.Net.V2.IEN;
+using SaigeVision.Net.V2.OCR;
+using SaigeVision.Net.V2.Segmentation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,15 +38,26 @@ namespace DockVision
             _dockPanel.Theme = new VS2015BlueTheme();
 
             LoadDockingWindows();
+
+            Global.Inst.Initialize();
         }
+
 
         private void LoadDockingWindows()
         {
+            _dockPanel.AllowEndUserDocking = false;
+            this.Width = 1800;
+            this.Height = 1200;
+
+
             var cameraWindow = new CameraForm();
             cameraWindow.Show(_dockPanel, DockState.Document);
 
+            var runWindow = new RunForm();
+            runWindow.Show(_dockPanel, DockState.DockBottom);
+
             var resultWindow = new ResultForm();
-            resultWindow.Show(cameraWindow.Pane, DockAlignment.Bottom, 0.3);
+            resultWindow.Show(runWindow.Pane, runWindow.Pane.ActiveContent);
 
             var propWindow = new PropertiesForm();
             propWindow.Show(_dockPanel, DockState.DockRight);
@@ -45,7 +66,10 @@ namespace DockVision
             statisticWindow.Show(_dockPanel, DockState.DockRight);
 
             var LogWindow = new LogForm();
-            LogWindow.Show(propWindow.Pane, DockAlignment.Bottom, 0.5);
+            LogWindow.Show(propWindow.Pane, DockAlignment.Bottom, 0.27);
+
+
+            _dockPanel.DockRightPortion = 0.4;
         }
 
         public static T GetDockForm<T>() where T : DockContent
@@ -69,8 +93,15 @@ namespace DockVision
                 {
                     string filePath = openFileDialog.FileName;
                     cameraForm.LoadImage(filePath);
+                    txt_BaseImagePath.Text = filePath;
                 }
             }
         }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Global.Inst.Dispose();
+        }
+
+
     }
 }

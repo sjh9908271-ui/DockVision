@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DockVision.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,10 +8,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockVision
 {
-    public partial class RunForm : Form
+    public partial class RunForm : DockContent
     {
         public RunForm()
         {
@@ -19,7 +21,7 @@ namespace DockVision
 
         private void btnGrab_Click(object sender, EventArgs e)
         {
-        //     Global.Inst.InspStage.Grab(0);
+            Global.Inst.InspStage.Grab(0);
         }
     }
 }

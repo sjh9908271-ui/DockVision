@@ -29,31 +29,84 @@
         private void InitializeComponent()
         {
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.button1 = new System.Windows.Forms.Button();
+            this.binRangeTrackbar = new DockVision.UIControl.RangeTrackbar();
+            this.cbHighlight = new System.Windows.Forms.ComboBox();
+            this.chkUse = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // binRangeTrackbar
             // 
-            this.button1.Location = new System.Drawing.Point(30, 48);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(91, 55);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "바이너리";
-            this.button1.UseVisualStyleBackColor = true;
+            this.binRangeTrackbar.Location = new System.Drawing.Point(6, 17);
+            this.binRangeTrackbar.Name = "binRangeTrackbar";
+            this.binRangeTrackbar.Size = new System.Drawing.Size(237, 44);
+            this.binRangeTrackbar.TabIndex = 0;
+            this.binRangeTrackbar.ValueLeft = 80;
+            this.binRangeTrackbar.ValueRight = 200;
+            // 
+            // cbHighlight
+            // 
+            this.cbHighlight.FormattingEnabled = true;
+            this.cbHighlight.Location = new System.Drawing.Point(77, 61);
+            this.cbHighlight.Name = "cbHighlight";
+            this.cbHighlight.Size = new System.Drawing.Size(121, 20);
+            this.cbHighlight.TabIndex = 1;
+            // 
+            // chkUse
+            // 
+            this.chkUse.AutoSize = true;
+            this.chkUse.Location = new System.Drawing.Point(12, 12);
+            this.chkUse.Name = "chkUse";
+            this.chkUse.Size = new System.Drawing.Size(48, 16);
+            this.chkUse.TabIndex = 2;
+            this.chkUse.Text = "검사";
+            this.chkUse.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.binRangeTrackbar);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.cbHighlight);
+            this.groupBox1.Location = new System.Drawing.Point(12, 34);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(250, 90);
+            this.groupBox1.TabIndex = 3;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "이진화";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 64);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "하이라이트";
             // 
             // BinaryProp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.chkUse);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "BinaryProp";
-            this.Load += new System.EventHandler(this.BinaryProp_Load);
+            this.Size = new System.Drawing.Size(272, 348);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.Button button1;
+        private UIControl.RangeTrackbar binRangeTrackbar;
+        private System.Windows.Forms.ComboBox cbHighlight;
+        private System.Windows.Forms.CheckBox chkUse;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label1;
     }
 }

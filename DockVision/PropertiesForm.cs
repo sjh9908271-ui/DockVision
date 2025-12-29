@@ -1,4 +1,6 @@
-﻿using DockVision.Property;
+﻿using DockVision.Algorithm;
+using DockVision.Core;
+using DockVision.Property;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,24 +14,33 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace DockVision
 {
+    //#3_CAMERAVIEW_PROPERTY#3 속성창에 사용할 타입 선언
     public enum PropertyType
     {
         Binary,
-        Filter
+        Filter,
+        AIModule
     }
 
+    //#2_DOCKPANEL#4 PropertiesForm 클래스 는 도킹 가능하도록 상속을 변경
+
+    //public partial class PropertiesForm: Form
     public partial class PropertiesForm : DockContent
     {
+        //#3_CAMERAVIEW_PROPERTY#4 속성탭을 관리하기 위한 딕셔너리
         Dictionary<string, TabPage> _allTabs = new Dictionary<string, TabPage>();
 
         public PropertiesForm()
         {
             InitializeComponent();
 
+            //#3_CAMERAVIEW_PROPERTY#7 속성 탭을 초기화
             LoadOptionControl(PropertyType.Filter);
             LoadOptionControl(PropertyType.Binary);
+            LoadOptionControl(PropertyType.AIModule);
         }
 
+        //#3_CAMERAVIEW_PROPERTY#6 속성탭이 있다면 그것을 반환하고, 없다면 생성
         private void LoadOptionControl(PropertyType propType)
         {
             string tabName = propType.ToString();
@@ -66,6 +77,7 @@ namespace DockVision
             _allTabs[tabName] = newTab;
         }
 
+        //#3_CAMERAVIEW_PROPERTY# 5 속성 탭을 생성하는 메서드
         private UserControl CreateUserControl(PropertyType propType)
         {
             UserControl curProp = null;
@@ -73,11 +85,19 @@ namespace DockVision
             {
                 case PropertyType.Binary:
                     BinaryProp blobProp = new BinaryProp();
+
+                    //#7_BINARY_PREVIEW#8 이진화 속성 변경시 발생하는 이벤트 추가
+                    blobProp.RangeChanged += RangeSlider_RangeChanged;
+                    blobProp.PropertyChanged += PropertyChanged;
                     curProp = blobProp;
                     break;
                 case PropertyType.Filter:
                     ImageFilterProp filterProp = new ImageFilterProp();
                     curProp = filterProp;
+                    break;
+                case PropertyType.AIModule:
+                    AIModuleProp aiModuleProp = new AIModuleProp();
+                    curProp = aiModuleProp;
                     break;
                 default:
                     MessageBox.Show("유효하지 않은 옵션입니다.");
@@ -86,5 +106,39 @@ namespace DockVision
             return curProp;
         }
 
+        public void UpdateProperty(BlobAlgorithm blobAlgorithm)
+        {
+            if (blobAlgorithm is null)
+                return;
+
+            foreach (TabPage tabPage in tabPropControl.TabPages)
+            {
+                if (tabPage.Controls.Count > 0)
+                {
+                    UserControl uc = tabPage.Controls[0] as UserControl;
+
+                    if (uc is BinaryProp binaryProp)
+                    {
+                        binaryProp.SetAlgorithm(blobAlgorithm);
+                    }
+                }
+            }
+        }
+
+        //#7_BINARY_PREVIEW#7 이진화 속성 변경시 발생하는 이벤트 구현
+        private void RangeSlider_RangeChanged(object sender, RangeChangedEventArgs e)
+        {
+            // 속성값을 이용하여 이진화 임계값 설정
+            int lowerValue = e.LowerValue;
+            int upperValue = e.UpperValue;
+            bool invert = e.Invert;
+            ShowBinaryMode showBinMode = e.ShowBinMode;
+            Global.Inst.InspStage.PreView?.SetBinary(lowerValue, upperValue, invert, showBinMode);
+        }
+
+        private void PropertyChanged(object sender, EventArgs e)
+        {
+            Global.Inst.InspStage.RedrawMainView();
+        }
     }
 }

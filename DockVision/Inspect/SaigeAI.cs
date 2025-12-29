@@ -1,18 +1,18 @@
-﻿using SaigeVision.Net.V2;
-using SaigeVision.Net.V2.Detection;
-using SaigeVision.Net.V2.IAD;
-using SaigeVision.Net.V2.Segmentation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SaigeVision.Net.V2;
+using SaigeVision.Net.V2.Detection;
+using SaigeVision.Net.V2.IAD;
+using SaigeVision.Net.V2.Segmentation;
 
 namespace DockVision.Inspect
 {
@@ -166,58 +166,41 @@ namespace DockVision.Inspect
             _detEngine.SetInferenceOption(option);
         }
 
+        private object _lastResult;
 
         // 입력된 이미지에서 IAD 검사 진행
         public bool InspAIModule(Bitmap bmpImage)
         {
-            if (bmpImage is null)
-            {
-                MessageBox.Show("이미지가 없습니다. 유효한 이미지를 입력해주세요.", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
+            if (bmpImage == null) return false;
 
             _inspImage = bmpImage;
-
             SrImage srImage = new SrImage(bmpImage);
-
-            Stopwatch sw = Stopwatch.StartNew();
 
             switch (_engineType)
             {
                 case AIEngineType.AnomalyDetection:
-                    // IAD 엔진을 이용하여 검사합니다.
-                    if (_iADEngine == null)
-                    {
-                        MessageBox.Show("엔진이 초기화되지 않았습니다. LoadEngine 메서드를 호출하여 엔진을 초기화하세요.");
-                        return false;
-                    }
-
                     _iADResult = _iADEngine.Inspection(srImage);
+                    _lastResult = _iADResult;
                     break;
+
                 case AIEngineType.Segmentation:
-                    if (_segEngine == null)
-                    {
-                        MessageBox.Show("엔진이 초기화되지 않았습니다. LoadEngine 메서드를 호출하여 엔진을 초기화하세요.");
-                        return false;
-                    }
-                    // Segmentation 엔진을 이용하여 검사합니다.
                     _segResult = _segEngine.Inspection(srImage);
+                    _lastResult = _segResult;
                     break;
+
                 case AIEngineType.Detection:
-                    if (_detEngine == null)
-                    {
-                        MessageBox.Show("엔진이 초기화되지 않았습니다. LoadEngine 메서드를 호출하여 엔진을 초기화하세요.");
-                        return false;
-                    }
-                    // Detection 엔진을 이용하여 검사합니다.
                     _detResult = _detEngine.Inspection(srImage);
+                    _lastResult = _detResult;
                     break;
             }
 
-            //txt_InspectionTime.Text = sw.ElapsedMilliseconds.ToString();
-            sw.Stop();
-
             return true;
+        }
+
+
+        public object GetResult()
+        {
+            return _lastResult;
         }
 
         // IADResult를 이용하여 결과를 이미지에 그립니다.
@@ -295,7 +278,22 @@ namespace DockVision.Inspect
 
             return resultImage;
         }
+        public ModelInfo GetModelInfo()
+        {
+            switch (_engineType)
+            {
+                case AIEngineType.AnomalyDetection:
+                    return _iADEngine?.GetModelInfo();
 
+                case AIEngineType.Segmentation:
+                    return _segEngine?.GetModelInfo();
+
+                case AIEngineType.Detection:
+                    return _detEngine?.GetModelInfo();
+            }
+
+            return null;
+        }
         private void DisposeMode()
         {
             //GPU에 여러개 모델을 넣을 경우, 메모리가 부족할 수 있으므로, 해제

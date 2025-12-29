@@ -90,6 +90,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algorithm\BlobAlgorithm.cs" />
+    <Compile Include="Algorithm\InspAlgorithm.cs" />
     <Compile Include="CameraForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,6 +101,9 @@
     <Compile Include="Core\Global.cs" />
     <Compile Include="Core\ImageSpace.cs" />
     <Compile Include="Core\InspStage.cs" />
+    <Compile Include="Core\PreviewImage.cs" />
+    <Compile Include="Grab\GrabModel.cs" />
+    <Compile Include="Grab\WebCam.cs" />
     <Compile Include="Inspect\SaigeAI.cs" />
     <Compile Include="LogForm.cs">
       <SubType>Form</SubType>
@@ -113,6 +118,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Grab\HikRobotCam.cs" />
+    <Compile Include="ModelInfoWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PropertiesForm.cs">
       <SubType>Form</SubType>
@@ -121,17 +127,17 @@
       <DependentUpon>PropertiesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Property\AIModuleProp.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Property\AIModuleProp.Designer.cs">
-      <DependentUpon>AIModuleProp.cs</DependentUpon>
-    </Compile>
     <Compile Include="Property\BinaryProp.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Property\BinaryProp.Designer.cs">
       <DependentUpon>BinaryProp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Property\AIModuleProp.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Property\AIModuleProp.Designer.cs">
+      <DependentUpon>AIModuleProp.cs</DependentUpon>
     </Compile>
     <Compile Include="Property\ImageFilterProp.cs">
       <SubType>UserControl</SubType>
@@ -163,6 +169,12 @@
     <Compile Include="UIControl\ImageViewCtrl.Designer.cs">
       <DependentUpon>ImageViewCtrl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UIControl\RangeTracbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UIControl\RangeTracbar.Designer.cs">
+      <DependentUpon>RangeTracbar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Util\BitmapExtension.cs" />
     <EmbeddedResource Include="CameraForm.resx">
       <DependentUpon>CameraForm.cs</DependentUpon>
@@ -185,14 +197,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Property\AIModuleProp.resx">
-      <DependentUpon>AIModuleProp.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Property\BinaryProp.resx">
       <DependentUpon>BinaryProp.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Property\AIModuleProp.resx">
+      <DependentUpon>AIModuleProp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Property\ImageFilterProp.resx">
       <DependentUpon>ImageFilterProp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResultForm.resx">
+      <DependentUpon>ResultForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RunForm.resx">
       <DependentUpon>RunForm.cs</DependentUpon>
@@ -213,6 +228,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Saige.Designer.AIcs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -223,5 +239,6 @@
     <Analyzer Include="bin\SaigeVision.Net.V2.dll" />
     <Analyzer Include="bin\SaigeVision_Impl.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

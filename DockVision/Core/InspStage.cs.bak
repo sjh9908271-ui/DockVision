@@ -1,9 +1,7 @@
 ﻿using DockVision;
-using DockVision.Algorithm;
 using DockVision.Core;
 using DockVision.Grab;
 using DockVision.Inspect;
-using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,33 +11,15 @@ using System.Threading.Tasks;
 
 namespace DockVision.Core
 {
-    /*
-    #6_INSP_STAGE# - <<<비전검사를 위한 클래스 구현>>> 
-    InspStage는 비전 검사 시스템의 핵심 클래스로, 
-    카메라 인터페이스와 이미지 처리 기능을 통합하여 검사 프로세스를 관리합니다.
-    1) ImageSpace 클래스 구현
-    2) InspStage 클래스 구현
-    3) Global 클래스 구현
-    4) RunForm 클래스 구현
-    */
-
-    //검사와 관련된 클래스를 관리하는 클래스
     public class InspStage : IDisposable
     {
         public static readonly int MAX_GRAB_BUF = 5;
 
         private ImageSpace _imageSpace = null;
-
-        //#5_CAMERA_INTERFACE#4 Dispose도 GrabModel에서 상속받아 사용
         // private HikRobotCam _grabManager = null;
         private GrabModel _grabManager = null;
         private CameraType _camType = CameraType.WebCam;
-
-        SaigeAI _saigeAI;
-
-        //#7_BINARY_PREVIEW#1 이진화 프리뷰에 필요한 변수 선언
-        BlobAlgorithm _blobAlgorithm = null; // Blob 알고리즘 인스턴스
-        private PreviewImage _previewImage = null;
+        SaigeAI _saigeAI; 
 
         public InspStage() { }
         public ImageSpace ImageSpace
@@ -57,25 +37,11 @@ namespace DockVision.Core
             }
         }
 
-        //#7_BINARY_PREVIEW#2 이진화 알고리즘과 프리뷰 변수에 대한 프로퍼티 생성
-        public BlobAlgorithm BlobAlgorithm
-        {
-            get => _blobAlgorithm;
-        }
-
-        public PreviewImage PreView
-        {
-            get => _previewImage;
-        }
-
         public bool Initialize()
         {
             _imageSpace = new ImageSpace();
             _grabManager = new HikRobotCam();
 
-            //#7_BINARY_PREVIEW#3 이진화 알고리즘과 프리뷰 변수 인스턴스 생성
-            _blobAlgorithm = new BlobAlgorithm();
-            _previewImage = new PreviewImage();
 
             switch (_camType)
             {
@@ -122,23 +88,8 @@ namespace DockVision.Core
 
             SetBuffer(bufferCount);
 
-            //_grabManager.SetExposureTime(25000);
+            _grabManager.SetExposureTime(25000);
 
-            //#7_BINARY_PREVIEW#9 이진화 알고리즘을 속성창에 연동하기 위한 함수 구현            
-            UpdateProperty();
-        }
-
-
-        private void UpdateProperty()
-        {
-            if (BlobAlgorithm is null)
-                return;
-
-            PropertiesForm propertiesForm = MainForm.GetDockForm<PropertiesForm>();
-            if (propertiesForm is null)
-                return;
-
-            propertiesForm.UpdateProperty(BlobAlgorithm);
         }
 
         public void SetBuffer(int bufferCount)
@@ -171,7 +122,6 @@ namespace DockVision.Core
             _grabManager.Grab(bufferIndex, true);
         }
 
-        //영상 취득 완료 이벤트 발생시 후처리
         private void _multiGrab_TransferCompleted(object sender, object e)
         {
             int bufferIndex = (int)e;
@@ -220,21 +170,6 @@ namespace DockVision.Core
             return Global.Inst.InspStage.ImageSpace.GetBitmap();
         }
 
-        //#7_BINARY_PREVIEW#4 이진화 프리뷰를 위해, ImageSpace에서 이미지 가져오기
-        public Mat GetMat()
-        {
-            return Global.Inst.InspStage.ImageSpace.GetMat();
-        }
-
-        //#7_BINARY_PREVIEW#5 이진화 임계값 변경시, 프리뷰 갱신
-        public void RedrawMainView()
-        {
-            CameraForm cameraForm = MainForm.GetDockForm<CameraForm>();
-            if (cameraForm != null)
-            {
-                cameraForm.UpdateImageViewer();
-            }
-        }
         #region Disposable
 
         private bool disposed = false; // to detect redundant calls
@@ -251,7 +186,7 @@ namespace DockVision.Core
                         _saigeAI.Dispose();
                         _saigeAI = null;
                     }
-                    if(_grabManager != null)
+                    if (_grabManager != null)
                     {
                         _grabManager.Dispose();
                         _grabManager = null;
