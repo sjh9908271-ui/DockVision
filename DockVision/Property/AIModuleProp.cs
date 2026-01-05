@@ -220,16 +220,13 @@ namespace DockVision.Property
 
             lbx_ResultDetail.Items.Clear();
             lbx_ResultDetail.Items.Add($"Class : {className}");
-            lbx_ResultDetail.Items.Add($"Object Count : {classObjects.Length}");
+            lbx_ResultDetail.Items.Add($"Object Count : {filteredObjects.Length}");
             lbx_ResultDetail.Items.Add($"ImreadTime : {result.InspectionTime.ImreadTime}");
             lbx_ResultDetail.Items.Add($"InferenceTime : {result.InspectionTime.InferenceTime}");
             lbx_ResultDetail.Items.Add($"PostProcessingTime : {result.InspectionTime.PostProcessingTime}");
             lbx_ResultDetail.Items.Add("--------------------------------------");
 
-
-
-
-            foreach (var obj in objects)
+            foreach (var obj in filteredObjects)
             {
                 lbx_ResultDetail.Items.Add($"Name : {obj.ClassInfo.Name}");
                 lbx_ResultDetail.Items.Add($"Area : {obj.Area}");
@@ -242,25 +239,25 @@ namespace DockVision.Property
         private void ShowSegmentationDetail(SegmentationResult result, string className)
         {
             lbx_ResultDetail.Items.Clear();
-
             if (result == null) return;
 
-            var objects = result.SegmentedObjects
-                .Where(o => string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
+            // 🔹 Area 값 읽기
+            if (!TryGetAreaFilter(out double minArea, out double maxArea))
+                return;
 
-            var classObjects = result.SegmentedObjects
-                .Where(o => o.ClassInfo.Name == className)
+            // 🔹 Class + Area 필터
+            var filteredObjects = result.SegmentedObjects
+                .Where(o => string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase))
+                .Where(o => o.Area >= minArea && o.Area <= maxArea)
                 .ToArray();
 
-            lbx_ResultDetail.Items.Clear();
-            lbx_ResultDetail.Items.Add($"Class : {className}");
-            lbx_ResultDetail.Items.Add($"Contour Count : {classObjects.Length}");
+            lbx_ResultDetail.Items.Add($"Contour Count : {filteredObjects.Length}");
             lbx_ResultDetail.Items.Add($"ImreadTime : {result.InspectionTime.ImreadTime}");
             lbx_ResultDetail.Items.Add($"InferenceTime : {result.InspectionTime.InferenceTime}");
             lbx_ResultDetail.Items.Add($"PostProcessingTime : {result.InspectionTime.PostProcessingTime}");
             lbx_ResultDetail.Items.Add("--------------------------------------");
 
-            foreach (var obj in objects)
+            foreach (var obj in filteredObjects)
             {
                 lbx_ResultDetail.Items.Add($"Name : {obj.ClassInfo.Name}");
                 lbx_ResultDetail.Items.Add($"Area : {obj.Area}");
@@ -306,6 +303,36 @@ namespace DockVision.Property
             }
         }
 
+        private bool TryGetAreaFilter(out double minArea, out double maxArea)
+        {
+            minArea = double.MinValue;
+            maxArea = double.MaxValue;
+
+            if (!string.IsNullOrWhiteSpace(txtMinArea.Text))
+            {
+                if (!double.TryParse(txtMinArea.Text, out minArea))
+                    return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtMaxArea.Text))
+            {
+                if (!double.TryParse(txtMaxArea.Text, out maxArea))
+                    return false;
+        }
+
+            return true;
+        }
+
+        private void UpdateAreaFilterUI()
+        {
+            bool enable =
+                _engineType == AIEngineType.Detection ||
+                _engineType == AIEngineType.Segmentation;
+
+            txtMinArea.Enabled = enable;
+            txtMaxArea.Enabled = enable;
+            lblAreaFilter.Enabled = enable;
+        }
 
         private void UpdateModelInfoUI()
         {
@@ -336,6 +363,28 @@ namespace DockVision.Property
 
         }
 
+        private void UpdateClassInfoResultUI()
+        {
+            if (_saigeAI == null) return;
+
+            var result = _saigeAI.GetResult();
+            if (result == null) return;
+
+            switch (_engineType)
+            {
+                case AIEngineType.AnomalyDetection:
+                    UpdateIADClassInfo(result as IADResult);
+                    break;
+
+                case AIEngineType.Detection:
+                    UpdateDetectionClassInfo(result as DetectionResult);
+                    break;
+
+                case AIEngineType.Segmentation:
+                    UpdateSegmentationClassInfo(result as SegmentationResult);
+                    break;
+            }
+        }
 
         private void UpdateResultUI()
         {
@@ -366,7 +415,16 @@ namespace DockVision.Property
         {
             if (detResult == null) return;
 
-            var groups = detResult.DetectedObjects
+            // 🔹 Area 값 읽기
+            if (!TryGetAreaFilter(out double minArea, out double maxArea))
+                return;
+
+            // 🔹 Area 필터 적용
+            var filteredObjects = detResult.DetectedObjects
+                .Where(o => o.Area >= minArea && o.Area <= maxArea);
+
+            // 🔹 필터된 결과로 그룹핑
+            var groups = filteredObjects
                 .GroupBy(o => o.ClassInfo);
 
             foreach (var g in groups)
@@ -385,7 +443,16 @@ namespace DockVision.Property
         {
             if (segResult == null) return;
 
-            var groups = segResult.SegmentedObjects
+            // 🔹 Area 값 읽기
+            if (!TryGetAreaFilter(out double minArea, out double maxArea))
+                return;
+
+            // 🔹 Area 필터 적용
+            var filteredObjects = segResult.SegmentedObjects
+                .Where(o => o.Area >= minArea && o.Area <= maxArea);
+
+            // 🔹 필터된 결과로 그룹핑
+            var groups = filteredObjects
                 .GroupBy(o => o.ClassInfo);
 
             foreach (var g in groups)
@@ -419,48 +486,12 @@ namespace DockVision.Property
             }
         }
 
-        private void UpdateClassInfoResultUI()
-        {
-            if (_saigeAI == null) return;
-
-            var result = _saigeAI.GetResult();
-            if (result == null) return;
-
-            switch (_engineType)
-            {
-                case AIEngineType.AnomalyDetection:
-                    UpdateIADClassInfo(result as IADResult);
-                    break;
-
-                case AIEngineType.Detection:
-                    UpdateDetectionClassInfo(result as DetectionResult);
-                    break;
-
-                case AIEngineType.Segmentation:
-                    UpdateSegmentationClassInfo(result as SegmentationResult);
-                    break;
-            }
-        }
-
-        private void UpdateIADClassInfo(IADResult iadResult)
-        {
-            if (iadResult == null || lv_ClassInfos.Items.Count == 0) return;
-
-            for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
-            {
-                var item = lv_ClassInfos.Items[i];
-                string className = item.Text;
-
-                bool hasNG = iadResult.SegmentedObjects.Any(o =>
-                    string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
-
-                item.SubItems[2].Text = hasNG ? "True" : "False";
-            }
-        }
-
         private void UpdateDetectionClassInfo(DetectionResult detResult)
-        {
+            {
             if (detResult == null || lv_ClassInfos.Items.Count == 0) return;
+
+            if (!TryGetAreaFilter(out double minArea, out double maxArea))
+                return;
 
             for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
             {
@@ -478,12 +509,31 @@ namespace DockVision.Property
         {
             if (segResult == null || lv_ClassInfos.Items.Count == 0) return;
 
+            if (!TryGetAreaFilter(out double minArea, out double maxArea))
+                return;
+
             for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
             {
                 var item = lv_ClassInfos.Items[i];
                 string className = item.Text;
 
                 bool hasNG = segResult.SegmentedObjects.Any(o =>
+                    string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
+
+                item.SubItems[2].Text = hasNG ? "True" : "False";
+            }
+        }
+
+        private void UpdateIADClassInfo(IADResult iadResult)
+        {
+            if (iadResult == null || lv_ClassInfos.Items.Count == 0) return;
+
+            for (int i = 0; i < lv_ClassInfos.Items.Count; i++)
+            {
+                var item = lv_ClassInfos.Items[i];
+                string className = item.Text;
+
+                bool hasNG = iadResult.SegmentedObjects.Any(o =>
                     string.Equals(o.ClassInfo.Name, className, StringComparison.OrdinalIgnoreCase));
 
                 item.SubItems[2].Text = hasNG ? "True" : "False";
